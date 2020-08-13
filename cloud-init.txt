@@ -1,0 +1,45 @@
+#cloud-config
+
+apt:
+  sources:
+    docker:
+      source: deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    kubernetes:
+      source: deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main
+      keyid: 54A647F9048D5688D7DA2ABE6A030B21BA07F4FB
+
+packages:
+  - containerd.io
+  - docker-ce
+  - docker-ce-cli
+  - kubelet
+  - kubeadm
+  - kubectl
+
+write_files:
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "100m"
+        },
+        "storage-driver": "overlay2"
+      }
+  - path: /etc/systemd/system/docker.service.d/.empty
+  - path: /etc/cloud/cloud.cfg.d/99-azure.cfg
+    content: |
+      datasource:
+        Azure:
+          apply_network_config: false
+
+bootcmd:
+  - iptables -t nat -A POSTROUTING -m addrtype ! --dst-type local ! -d 10.0.0.0/24 -j MASQUERADE
+  - iptables -t filter -I FORWARD 1 -j ACCEPT
+
+runcmd:
+  - wget https://github.com/Azure/azure-container-networking/raw/master/scripts/install-cni-plugin.sh
+  - chmod a+x install-cni-plugin.sh
+  - ./install-cni-plugin.sh v1.1.6 v0.8.6
