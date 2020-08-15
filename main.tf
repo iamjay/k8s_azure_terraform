@@ -12,3 +12,6 @@ terraform {
   backend "local" {
   }
 }
+
+data "azurerm_subscription" "current" {
+}

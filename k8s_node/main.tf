@@ -1,3 +1,6 @@
+data "azurerm_subscription" "current" {
+}
+
 resource "azurerm_network_interface" "worker1_nic" {
   name = "${var.name}_nic"
   location = var.location
@@ -22,11 +25,6 @@ resource "azurerm_network_interface" "worker1_nic" {
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "worker1_nic_sg" {
-  network_interface_id = azurerm_network_interface.worker1_nic.id
-  network_security_group_id = var.security_group_id
-}
-
 resource "azurerm_linux_virtual_machine" "worker1" {
   name = var.name
   location = var.location
@@ -36,7 +34,10 @@ resource "azurerm_linux_virtual_machine" "worker1" {
   admin_username = "azureuser"
   admin_ssh_key {
     username = "azureuser"
-    public_key = file("${path.module}/../pki/node.key.pub")
+    public_key = file("${path.module}/../pki/node.pub")
+  }
+  identity {
+    type = "SystemAssigned"
   }
   network_interface_ids = [
     azurerm_network_interface.worker1_nic.id,

@@ -17,24 +17,6 @@ packages:
   - kubeadm
   - kubectl
 
-write_files:
-  - path: /etc/docker/daemon.json
-    content: |
-      {
-        "exec-opts": ["native.cgroupdriver=systemd"],
-        "log-driver": "json-file",
-        "log-opts": {
-          "max-size": "100m"
-        },
-        "storage-driver": "overlay2"
-      }
-  - path: /etc/systemd/system/docker.service.d/.empty
-  - path: /etc/cloud/cloud.cfg.d/99-azure.cfg
-    content: |
-      datasource:
-        Azure:
-          apply_network_config: false
-
 bootcmd:
   - iptables -t nat -A POSTROUTING -m addrtype ! --dst-type local ! -d 10.0.0.0/24 -j MASQUERADE
   - iptables -t filter -I FORWARD 1 -j ACCEPT
