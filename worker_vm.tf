@@ -1,11 +1,12 @@
 module "workers" {
-  count = 1
+  count = 3
 
   source = "./k8s_node"
 
   name = "worker${count.index}"
   location = azurerm_resource_group.k8s_cluster.location
   resource_group_name = azurerm_resource_group.k8s_cluster.name
+  availability_set_id = azurerm_availability_set.k8s_as.id
 
   node_size = var.worker_size
   subnet_id = (azurerm_virtual_network.k8s_net.subnet[*].id)[0]

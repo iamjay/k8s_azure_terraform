@@ -6,6 +6,11 @@ variable "location" {
   type = string
 }
 
+variable "availability_set_id" {
+  type = string
+  default = null
+}
+
 variable "name" {
   type = string
 }

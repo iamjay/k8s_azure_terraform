@@ -29,6 +29,7 @@ resource "azurerm_linux_virtual_machine" "worker1" {
   name = var.name
   location = var.location
   resource_group_name = var.resource_group_name
+  availability_set_id = var.availability_set_id
 
   custom_data = var.custom_data
   admin_username = "azureuser"

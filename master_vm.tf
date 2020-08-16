@@ -67,6 +67,7 @@ module "master1" {
   name = "master1"
   location = azurerm_resource_group.k8s_cluster.location
   resource_group_name = azurerm_resource_group.k8s_cluster.name
+  availability_set_id = azurerm_availability_set.k8s_as.id
 
   node_size = var.master_size
   private_ip_address = var.master_node_ip
@@ -136,9 +137,4 @@ resource "azurerm_role_assignment" "master1_role" {
   scope = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${azurerm_resource_group.k8s_cluster.name}"
   role_definition_name = "Contributor"
   principal_id = module.master1.vm_principal_id
-}
-
-resource "azurerm_network_interface_security_group_association" "master_nic_sg" {
-  network_interface_id = module.master1.vm_nic_id
-  network_security_group_id = azurerm_network_security_group.net_sg_master.id
 }
